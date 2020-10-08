@@ -39,7 +39,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # optional
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
         if: always() # Pick up events even if the job fails or is canceled.
-      - uses: anchore/scan-action@master
+      - uses: anchore/scan-action@main
         with:
           image-reference: "${{ env.IMAGE }}:latest"
           dockerfile-path: "./Dockerfile"
