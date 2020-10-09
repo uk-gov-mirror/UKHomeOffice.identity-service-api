@@ -44,4 +44,4 @@ jobs:
           image: "${{ env.IMAGE }}:latest"
           fail-build: false
       - name: anchore inline scan JSON results
-        run: cat ./anchore-reports/vulnerabilities.json;
+        run: cat ./anchore-reports/*.json;
