@@ -54,4 +54,7 @@ public class MrzScan {
             "This is not required. If not provided then the data will only be persisted to S3.")
     private Workflow workflow;
 
+    @Schema(description = "Description of the app used to perform the scan")
+    private App app;
+
 }
