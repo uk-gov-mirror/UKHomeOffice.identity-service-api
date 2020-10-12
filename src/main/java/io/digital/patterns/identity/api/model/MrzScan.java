@@ -57,4 +57,6 @@ public class MrzScan {
     @Schema(description = "Description of the app used to perform the scan")
     private App app;
 
+    @Schema(description = "Description of the device used to perform the scan")
+    private Device device;
 }

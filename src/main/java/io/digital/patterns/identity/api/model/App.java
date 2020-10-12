@@ -4,10 +4,6 @@ import lombok.Data;
 
 @Data
 public class App {
-
     private String name;
     private String version;
-    private String manufacturer;
-    private String model;
-    private String platform;
 }
