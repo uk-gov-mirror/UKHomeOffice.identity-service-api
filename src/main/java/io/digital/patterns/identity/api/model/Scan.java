@@ -8,7 +8,7 @@ import java.util.Date;
 
 
 @Data
-public class MrzScan {
+public class Scan {
 
     @NotNull
     @Schema(
@@ -41,14 +41,6 @@ public class MrzScan {
             "be correlated against exceptions")
     private String message;
 
-    @NotNull
-    private Mrz mrz;
-
-    @Schema(description = "OCR data, this is optional and not required")
-    private OcrData ocrData;
-
-    @Schema(description = "NFC data, this is optional and not required")
-    private Nfc nfc;
 
     @Schema(description = "Optional configuration that enables the data to be posted to a workflow engine." +
             "This is not required. If not provided then the data will only be persisted to S3.")
@@ -59,4 +51,5 @@ public class MrzScan {
 
     @Schema(description = "Description of the device used to perform the scan")
     private Device device;
+
 }

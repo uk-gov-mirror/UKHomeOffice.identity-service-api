@@ -1,11 +1,11 @@
 package io.digital.patterns.identity.api.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.digital.patterns.identity.api.model.Mrz
-import io.digital.patterns.identity.api.model.MrzScan
-import io.digital.patterns.identity.api.model.MrzType
+import io.digital.patterns.identity.api.model.mrz.Mrz
+import io.digital.patterns.identity.api.model.mrz.MrzScan
+import io.digital.patterns.identity.api.model.mrz.MrzType
 import io.digital.patterns.identity.api.security.AuthorizationChecker
-import io.digital.patterns.identity.api.service.MrzService
+import io.digital.patterns.identity.api.service.ScanRepositoryService
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -32,7 +32,7 @@ class MrzScanControllerSpec extends Specification {
     private MockMvc mvc
 
     @SpringBean
-    private MrzService mrzService = Mock()
+    private ScanRepositoryService mrzService = Mock()
 
     @SpringBean
     private AuthorizationChecker authorizationChecker = new AuthorizationChecker(['read'], ['update'], ['admin'])
@@ -78,6 +78,7 @@ class MrzScanControllerSpec extends Specification {
         scan.mrz.dateOfExpiry = '27/12/2000'
         scan.mrz.dateOfBirth = '24/12/2000'
         scan.mrz.type = MrzType.TD1
+        scan.mlVersion = 'test'
 
         expect: '201 response'
         mvc.perform(post('/mrz')
@@ -101,7 +102,7 @@ class MrzScanControllerSpec extends Specification {
         scan.mrz.dateOfBirth = '24/12/2000'
         scan.mrz.type = MrzType.TD1
 
-        expect: '201 response'
+        expect: '400 response'
         mvc.perform(post('/mrz')
                 .content(new ObjectMapper().writeValueAsString(scan))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -118,7 +119,7 @@ class MrzScanControllerSpec extends Specification {
         scan.dateOfScan = new Date()
         scan.scanningOfficer = 'test@test.com'
         scan.status = 'SUCCESS'
-
+        scan.mlVersion = 'test'
         scan.mrz = new Mrz()
         scan.mrz.dateOfExpiry = '27/12/2000'
         scan.mrz.dateOfBirth = '24/12/2000'

@@ -3,10 +3,11 @@ package io.digital.patterns.identity.api.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.digital.patterns.identity.api.ProcessInstance;
 import io.digital.patterns.identity.api.aws.AwsProperties;
-import io.digital.patterns.identity.api.model.MrzScan;
+import io.digital.patterns.identity.api.model.Scan;
 import io.digital.patterns.identity.api.model.Workflow;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -33,7 +34,7 @@ import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
-public class MrzService {
+public class ScanRepositoryService {
 
     private final AmazonS3 amazonS3;
     private final AwsProperties awsProperties;
@@ -43,10 +44,10 @@ public class MrzService {
     private final RestTemplate restTemplate;
     private final String workflowUrl;
 
-    public MrzService(AmazonS3 amazonS3,
-                      AwsProperties awsProperties,
-                      ObjectMapper objectMapper, RestTemplate restTemplate,
-                      @Value("${workflowApi.url}") String workflowUrl) {
+    public ScanRepositoryService(AmazonS3 amazonS3,
+                                 AwsProperties awsProperties,
+                                 ObjectMapper objectMapper, RestTemplate restTemplate,
+                                 @Value("${workflowApi.url}") String workflowUrl) {
         this.amazonS3 = amazonS3;
         this.awsProperties = awsProperties;
         this.objectMapper = objectMapper;
@@ -54,10 +55,10 @@ public class MrzService {
         this.workflowUrl = workflowUrl;
     }
 
-    public List<MrzScan> getScans(String correlationId) {
+    public List<? extends Scan> getScans(String correlationId, Class<? extends Scan> clazz) {
 
         ObjectListing objectListing = amazonS3.listObjects(awsProperties.getBucketName(), correlationId);
-        List<MrzScan> scans = new ArrayList<>();
+        List<? extends Scan> scans = new ArrayList<>();
 
         if (objectListing.getObjectSummaries().isEmpty()) {
             log.info("No scans found for '{}'", correlationId);
@@ -68,7 +69,7 @@ public class MrzService {
             try {
                 String json = IOUtils.toString(object.getObjectContent(),
                         StandardCharsets.UTF_8);
-                return objectMapper.readValue(json, MrzScan.class);
+                return objectMapper.readValue(json, clazz);
             } catch (Exception e) {
                 log.error("Unable to get data stream for '{}'", summary.getKey(), e);
                 return null;
@@ -76,27 +77,27 @@ public class MrzService {
         }).filter(Objects::nonNull).collect(toList());
     }
 
-    public String create(@Valid MrzScan mrzScan) {
+    public String create(@Valid Scan scan) {
 
         try {
-            String key = key(mrzScan.getCorrelationId(), mrzScan.getScanningOfficer(),
-                    mrzScan.getDateOfScan());
+            String key = key(scan.getCorrelationId(), scan.getScanningOfficer(),
+                    scan.getDateOfScan());
 
             ObjectMetadata metadata = new ObjectMetadata();
-            metadata.addUserMetadata("submittedby", mrzScan.getScanningOfficer());
-            metadata.addUserMetadata("submissiondate", mrzScan.getDateOfScan().toString());
-            metadata.addUserMetadata("correlationId", mrzScan.getCorrelationId());
+            metadata.addUserMetadata("submittedby", scan.getScanningOfficer());
+            metadata.addUserMetadata("submissiondate", scan.getDateOfScan().toString());
+            metadata.addUserMetadata("correlationId", scan.getCorrelationId());
             File scratchFile = createTempFile(UUID.randomUUID().toString(), ".json");
 
             FileUtils.copyInputStreamToFile(IOUtils.toInputStream(
-                    objectMapper.writeValueAsString(mrzScan), "UTF-8"), scratchFile);
+                    objectMapper.writeValueAsString(scan), "UTF-8"), scratchFile);
 
             PutObjectRequest request = new PutObjectRequest(awsProperties.getBucketName(), key, scratchFile);
             request.setMetadata(metadata);
             final PutObjectResult putObjectResult = amazonS3.putObject(request);
             log.info("Uploaded to S3 '{}'", putObjectResult.getETag());
 
-            Workflow workflow = mrzScan.getWorkflow();
+            Workflow workflow = scan.getWorkflow();
             if (workflow != null) {
                 JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken)
                         SecurityContextHolder.getContext().getAuthentication();
@@ -110,11 +111,11 @@ public class MrzService {
                 httpHeaders.setAccept(List.of(MediaType.APPLICATION_JSON));
                 httpHeaders.setBearerAuth(authenticationToken.getToken().getTokenValue());
                 JSONObject payload = new JSONObject();
-                payload.put("businessKey", mrzScan.getCorrelationId());
+                payload.put("businessKey", scan.getCorrelationId());
 
                 JSONObject variable = new JSONObject();
                 JSONObject alertJson = new JSONObject();
-                alertJson.put("value", objectMapper.writeValueAsString(mrzScan));
+                alertJson.put("value", objectMapper.writeValueAsString(scan));
                 alertJson.put("type", "json");
                 variable.put(workflow.getVariableName(), alertJson);
                 payload.put("variables", variable);
@@ -136,11 +137,11 @@ public class MrzService {
                 ).getBody();
                 log.info("Process instance started {} for mrz scan {}",
                         Objects.requireNonNull(processInstance).getId(),
-                        mrzScan.getCorrelationId());
+                        scan.getCorrelationId());
 
             }
 
-            return mrzScan.getCorrelationId();
+            return scan.getCorrelationId();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -1,8 +1,8 @@
 package io.digital.patterns.identity.api.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.digital.patterns.identity.api.model.CscaMasterList
-import io.digital.patterns.identity.api.model.CscaMasterListUploadRequest
+import io.digital.patterns.identity.api.model.csca.CscaMasterList
+import io.digital.patterns.identity.api.model.csca.CscaMasterListUploadRequest
 import io.digital.patterns.identity.api.security.AuthorizationChecker
 import io.digital.patterns.identity.api.service.CscaMasterListService
 import org.spockframework.spring.SpringBean

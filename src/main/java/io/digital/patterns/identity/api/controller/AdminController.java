@@ -1,6 +1,6 @@
 package io.digital.patterns.identity.api.controller;
 
-import io.digital.patterns.identity.api.service.MrzService;
+import io.digital.patterns.identity.api.service.ScanRepositoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Admin", description = "Advanced administrator functions")
 public class AdminController {
 
-    private final MrzService mrzService;
+    private final ScanRepositoryService scanRepositoryService;
 
-    public AdminController(MrzService mrzService) {
-        this.mrzService = mrzService;
+    public AdminController(ScanRepositoryService scanRepositoryService) {
+        this.scanRepositoryService = scanRepositoryService;
     }
 
     @DeleteMapping(path = "/mrz/{correlationId}")
@@ -30,7 +30,7 @@ public class AdminController {
     @Operation(summary = "Remove MRZ scans for a given correlation id")
     public void delete(@Parameter(description = "ID that can link a list of scans", required = true)
                        @PathVariable String correlationId) {
-        mrzService.delete(correlationId);
+        scanRepositoryService.delete(correlationId);
     }
 
 }

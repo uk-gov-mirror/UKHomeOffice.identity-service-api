@@ -1,5 +1,7 @@
-package io.digital.patterns.identity.api.model;
+package io.digital.patterns.identity.api.model.mrz;
 
+import io.digital.patterns.identity.api.model.Document;
+import io.digital.patterns.identity.api.model.Person;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

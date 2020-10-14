@@ -5,7 +5,7 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import io.digital.patterns.identity.api.Constants;
 import io.digital.patterns.identity.api.aws.AwsProperties;
-import io.digital.patterns.identity.api.model.CscaMasterListUploadRequest;
+import io.digital.patterns.identity.api.model.csca.CscaMasterListUploadRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.converter.crypto.PGPDataFormat;

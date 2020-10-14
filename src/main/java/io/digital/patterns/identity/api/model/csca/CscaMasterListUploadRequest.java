@@ -1,4 +1,4 @@
-package io.digital.patterns.identity.api.model;
+package io.digital.patterns.identity.api.model.csca;
 
 import lombok.Data;
 

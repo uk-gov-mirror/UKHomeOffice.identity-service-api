@@ -5,7 +5,7 @@ import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import io.digital.patterns.identity.api.aws.AwsProperties
-import io.digital.patterns.identity.api.model.CscaMasterListUploadRequest
+import io.digital.patterns.identity.api.model.csca.CscaMasterListUploadRequest
 import org.apache.camel.CamelContext
 import org.apache.camel.ProducerTemplate
 import org.apache.camel.impl.DefaultCamelContext

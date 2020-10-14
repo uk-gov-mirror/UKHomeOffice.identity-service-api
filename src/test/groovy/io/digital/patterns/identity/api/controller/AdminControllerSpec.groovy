@@ -1,7 +1,7 @@
 package io.digital.patterns.identity.api.controller
 
 import io.digital.patterns.identity.api.security.AuthorizationChecker
-import io.digital.patterns.identity.api.service.MrzService
+import io.digital.patterns.identity.api.service.ScanRepositoryService
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -26,7 +26,7 @@ class AdminControllerSpec extends Specification {
     private MockMvc mvc
 
     @SpringBean
-    private MrzService mrzService = Mock()
+    private ScanRepositoryService mrzService = Mock()
 
     @SpringBean
     private AuthorizationChecker authorizationChecker = new AuthorizationChecker(['read'], ['update'], ['admin'])

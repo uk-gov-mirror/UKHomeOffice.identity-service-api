@@ -8,9 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.github.tomjankes.wiremock.WireMockGroovy
 import io.digital.patterns.identity.api.aws.AwsProperties
-import io.digital.patterns.identity.api.model.Mrz
-import io.digital.patterns.identity.api.model.MrzScan
-import io.digital.patterns.identity.api.model.MrzType
+import io.digital.patterns.identity.api.model.mrz.Mrz
+import io.digital.patterns.identity.api.model.mrz.MrzScan
+import io.digital.patterns.identity.api.model.mrz.MrzType
 import io.digital.patterns.identity.api.model.Workflow
 import org.junit.ClassRule
 import org.springframework.security.core.context.SecurityContextHolder
@@ -25,7 +25,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*
 import static com.github.tomakehurst.wiremock.http.Response.response
 import static org.springframework.security.oauth2.jwt.JwtClaimNames.SUB
 
-class MrzServiceSpec extends Specification {
+class ScanRepositoryServiceSpec extends Specification {
 
     def static wmPort = 9078
 
@@ -42,7 +42,7 @@ class MrzServiceSpec extends Specification {
 
     AmazonS3 amazonS3
 
-    MrzService mrzService
+    ScanRepositoryService mrzService
 
     def setupSpec() {
         LOCAL_STACK.start()
@@ -65,7 +65,7 @@ class MrzServiceSpec extends Specification {
 
         properties.bucketName = 'scans'
         amazonS3.createBucket(properties.bucketName)
-        mrzService = new MrzService(amazonS3, properties, new ObjectMapper(), new RestTemplate(),
+        mrzService = new ScanRepositoryService(amazonS3, properties, new ObjectMapper(), new RestTemplate(),
                 "http://localhost:9078")
     }
 
@@ -183,7 +183,7 @@ class MrzServiceSpec extends Specification {
 
 
         when: 'a call to get scans is made'
-        def scans = mrzService.getScans('newId')
+        def scans = mrzService.getScans('newId', MrzScan)
 
         then: 'scans should not be empty'
         scans.size() == 2
@@ -229,7 +229,7 @@ class MrzServiceSpec extends Specification {
         mrzService.delete('newId1')
 
         and: 'a call then is made to get scans'
-        def scans = mrzService.getScans('newId1')
+        def scans = mrzService.getScans('newId1', MrzScan)
 
         then: 'scans should be empty'
         scans.size() == 0

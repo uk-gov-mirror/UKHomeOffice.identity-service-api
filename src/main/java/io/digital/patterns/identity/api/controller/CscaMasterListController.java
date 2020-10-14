@@ -1,8 +1,8 @@
 package io.digital.patterns.identity.api.controller;
 
 
-import io.digital.patterns.identity.api.model.CscaMasterList;
-import io.digital.patterns.identity.api.model.CscaMasterListUploadRequest;
+import io.digital.patterns.identity.api.model.csca.CscaMasterList;
+import io.digital.patterns.identity.api.model.csca.CscaMasterListUploadRequest;
 import io.digital.patterns.identity.api.service.CscaMasterListService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
