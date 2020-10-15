@@ -12,6 +12,4 @@ public class Document {
     private String issuingAuthority;
     private String dateOfExpiry;
     private String dateOfIssue;
-    private Image image;
-
 }

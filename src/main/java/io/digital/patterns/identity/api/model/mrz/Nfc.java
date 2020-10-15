@@ -9,4 +9,6 @@ public class Nfc {
     private Image image;
     private String documentType;
     private Chip chip;
+    private VerificationStatus verificationStatus;
+    private AccessControlStatus accessControlStatus;
 }
