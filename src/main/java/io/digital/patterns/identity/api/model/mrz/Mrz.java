@@ -14,7 +14,6 @@ public class Mrz {
             enumAsRef = true
     )
     @NotNull
-    private MrzType type;
     private String issuingCountry;
     private String surname;
     private String[] givenNames;
