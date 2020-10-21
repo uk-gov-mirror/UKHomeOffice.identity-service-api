@@ -17,7 +17,7 @@ steps:
     AWS_SECRET_ACCESS_KEY:
       from_secret: DEV_DRONE_AWS_SECRET_ACCESS_KEY
     DEPLOY_ENV: dev
-    DRONE_SERVER: https://drone.acp.homeoffice.gov.uk
+    DRONE_SERVER: https://drone-gh.acp.homeoffice.gov.uk
     DRONE_TOKEN:
       from_secret: DRONE_PUBLIC_TOKEN
   when:
@@ -35,7 +35,7 @@ steps:
     AWS_SECRET_ACCESS_KEY:
       from_secret: STAGING_DRONE_AWS_SECRET_ACCESS_KEY
     DEPLOY_ENV: staging
-    DRONE_SERVER: https://drone.acp.homeoffice.gov.uk
+    DRONE_SERVER: https://drone-gh.acp.homeoffice.gov.uk
     DRONE_TOKEN:
       from_secret: DRONE_PUBLIC_TOKEN
   when:
@@ -53,7 +53,7 @@ steps:
     AWS_SECRET_ACCESS_KEY:
       from_secret: PRODUCTION_DRONE_AWS_SECRET_ACCESS_KEY
     DEPLOY_ENV: production
-    DRONE_SERVER: https://drone.acp.homeoffice.gov.uk
+    DRONE_SERVER: https://drone-gh.acp.homeoffice.gov.uk
     DRONE_TOKEN:
       from_secret: DRONE_PUBLIC_TOKEN
   when:
@@ -195,5 +195,27 @@ steps:
     status:
     - success
     - failure
+
+services:
+- name: docker
+  image: docker:19.03.12-dind
+  volumes:
+  - name: dockersock
+    path: /var/run
+
+- name: anchore-submission-server
+  image: docker.digital.homeoffice.gov.uk/acp-anchore-submission:latest
+  commands:
+  - /anchore-submission server
+  environment:
+    ANCHORE_URL: acp-anchore.acp.homeoffice.gov.uk
+    REGISTRY_URL: acp-ephemeral-registry.acp.homeoffice.gov.uk
+  volumes:
+  - name: dockersock
+    path: /var/run
+
+volumes:
+- name: dockersock
+  temp: {}
 
 ...
