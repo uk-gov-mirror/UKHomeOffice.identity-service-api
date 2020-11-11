@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class AccessControlStatus {
     private Authentication basicAccessControl;
-    private Authentication passwordAuthenticationConnectionEstablishment;
+    private Authentication passwordAuthenticatedConnectionEstablishment;
     private Authentication extendedAccessControlTerminalAuthentication;
-    private String[] credentitalsTypesUsed;
+    private String[] credentialTypesUsed;
 }
 
