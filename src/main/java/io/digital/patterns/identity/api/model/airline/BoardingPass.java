@@ -60,4 +60,8 @@ public class BoardingPass {
 
     @Schema(description = "Security Data")
     private String securityData;
+
+    @Schema(description = "Raw Boarding Pass")
+    @NotNull
+    private String rawData;
 }

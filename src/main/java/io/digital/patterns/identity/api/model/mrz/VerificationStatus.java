@@ -16,8 +16,6 @@ public class VerificationStatus {
     private Authentication chipAuthentication;
     private Authentication activeAuthentication;
     private Authentication extendedAccessControlChipAuthentication;
-    private AccessControlStatus accessControlStatus;
-
     private SigningCertificate documentSigning;
     private SigningCertificate countrySigning;
 
