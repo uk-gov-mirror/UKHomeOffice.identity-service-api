@@ -11,6 +11,7 @@ import org.apache.camel.ProducerTemplate
 import org.apache.camel.impl.DefaultCamelContext
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
+import org.springframework.core.io.ClassPathResource
 import org.testcontainers.containers.localstack.LocalStackContainer
 import spock.lang.Shared
 import spock.lang.Specification
@@ -53,8 +54,8 @@ class CscaMasterListServiceSpec extends Specification {
         properties.cscaMasterListBucketName = 'csca'
         amazonS3.createBucket(properties.cscaMasterListBucketName)
         File scratchFile = File.createTempFile(UUID.randomUUID().toString(), ".ml");
-        FileUtils.copyInputStreamToFile(FileUtils.getResourceAsStream("/GermanMasterList.gpg"), scratchFile);
-        amazonS3.putObject(properties.cscaMasterListBucketName, 'GermanMasterList.gpg',
+        FileUtils.copyInputStreamToFile(FileUtils.getResourceAsStream("/GermanMasterlist.ml.gpg"), scratchFile)
+        amazonS3.putObject(properties.cscaMasterListBucketName, 'GermanMasterlist.ml.gpg',
                 scratchFile
         )
 
@@ -94,7 +95,7 @@ class CscaMasterListServiceSpec extends Specification {
         given: 'a request to upload a new file'
         def request = new CscaMasterListUploadRequest()
         request.bucketName = "csca"
-        request.fileName = "GermanMasterList.gpg"
+        request.fileName = "GermanMasterlist.ml.gpg"
 
         when: 'request is submitted'
         cscaMasterListService.upload(request)
@@ -109,37 +110,24 @@ class CscaMasterListServiceSpec extends Specification {
     }
 
     def 'can handle etag identifier'() {
-        given: 'a master file'
-        File scratchFile = File.createTempFile(UUID.randomUUID().toString(), ".ml");
-        FileUtils.copyInputStreamToFile(FileUtils.getResourceAsStream("/GermanMasterList.gpg"), scratchFile)
-        def objectResult = amazonS3.putObject(properties.cscaMasterListBucketName, 'csca-masterlist.ml',
-                scratchFile
-        )
-
-        when: 'a request is made with the same etag'
-        def result = cscaMasterListService.get(objectResult.getETag())
-
-        then: 'content will be empty'
-        result.content == null
-
-
         when: 'a request is made with a null'
-        result = cscaMasterListService.get(null)
+        def result = cscaMasterListService.get(null)
 
         then: 'content will not be empty'
-        result.content != ''
+        def expected = IOUtils.toByteArray(new ClassPathResource("/GermanMasterlist.ml").getInputStream())
+        result.content == expected
 
         when: 'a request is made with an empty string'
         result = cscaMasterListService.get('')
 
         then: 'content will not be empty'
-        result.content != ''
+        result.content == expected
 
         when: 'a request is made with an different etag'
         result = cscaMasterListService.get('random')
 
         then: 'content will not be empty'
-        result.content != ''
+        result.content == expected
 
     }
 

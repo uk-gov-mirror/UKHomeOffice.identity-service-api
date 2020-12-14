@@ -7,6 +7,6 @@ import java.util.Date;
 @Data
 public class CscaMasterList {
     private String etag;
-    private String content;
+    private byte[] content;
     private Date lastModified;
 }

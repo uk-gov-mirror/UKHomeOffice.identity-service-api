@@ -1,6 +1,7 @@
 package io.digital.patterns.identity.api.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import io.digital.patterns.identity.api.Constants;
@@ -29,6 +30,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -169,11 +171,11 @@ public class CscaMasterListRouteConfiguration {
                         })
                         .log("Performed decryption, preparing to upload to S3")
                         .process(exchange -> {
-                            File scratchFile = File.createTempFile(UUID.randomUUID().toString(), ".ml");
-                            FileUtils.copyInputStreamToFile(exchange.getIn().getBody(InputStream.class), scratchFile);
+                            InputStream inputStream = new ByteArrayInputStream((byte[]) exchange.getIn().getBody());
                             PutObjectResult result = amazonS3.putObject(
                                     awsProperties.getCscaMasterListBucketName(), CSCA_MASTER_LIST_KEY,
-                                    scratchFile);
+                                    inputStream,
+                                    new ObjectMetadata());
                             exchange.getIn().setBody(result.getETag());
                         }).log("Uploaded to S3 with eTag: ${body}");
 

@@ -4,6 +4,7 @@ package io.digital.patterns.identity.api.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import io.digital.patterns.identity.api.aws.AwsProperties;
 import io.digital.patterns.identity.api.model.csca.CscaMasterList;
 import io.digital.patterns.identity.api.model.csca.CscaMasterListUploadRequest;
@@ -13,6 +14,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
 import static io.digital.patterns.identity.api.Constants.CSCA_MASTER_LIST_KEY;
@@ -47,10 +49,9 @@ public class CscaMasterListService {
             if (submittedETag == null) {
                 log.info("No etag present...so loading list");
                 S3Object object = amazonS3.getObject(cscaMasterListBucketName, CSCA_MASTER_LIST_KEY);
-                String content = IOUtils.toString(object.getObjectContent(), StandardCharsets.UTF_8);
                 String eTag = object.getObjectMetadata().getETag();
                 list.setLastModified(object.getObjectMetadata().getLastModified());
-                list.setContent(content);
+                list.setContent(IOUtils.toByteArray(object.getObjectContent()));
                 list.setEtag(eTag);
             } else {
                 log.info("etag present...checking if list needs to be loaded");
@@ -60,8 +61,7 @@ public class CscaMasterListService {
                 if (!eTag.equalsIgnoreCase(submittedETag)) {
                     log.info("etag was present but it was not the same as S3 so loading list");
                     S3Object object = amazonS3.getObject(cscaMasterListBucketName, CSCA_MASTER_LIST_KEY);
-                    String content = IOUtils.toString(object.getObjectContent(), StandardCharsets.UTF_8);
-                    list.setContent(content);
+                    list.setContent(IOUtils.toByteArray(object.getObjectContent()));
                 } else {
                     log.info("eTag the same so not returning list");
                 }
