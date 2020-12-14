@@ -11,7 +11,7 @@ jobs:
       IMAGE_DOCKER_HUB: 'ukhomeofficedigital/identity-service-api'
     steps:
       - uses: actions/checkout@v2
-      - uses: joschi/setup-jdk@v1
+      - uses: joschi/setup-jdk@v2
         with:
           java-version: 'openjdk14'
           architecture: 'x64'
@@ -31,11 +31,3 @@ jobs:
           cache: true
           snapshot: true
           tags: "${{ github.sha }}"
-      - uses: 8398a7/action-slack@v2
-        with:
-          status: ${{ job.status }}
-          author_name: Github # default: 8398a7@action-slack
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # optional
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
-        if: always() # Pick up events even if the job fails or is canceled.
