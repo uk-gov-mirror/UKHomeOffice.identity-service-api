@@ -1,4 +1,4 @@
-![Build Status](https://drone-gh.acp.homeoffice.gov.uk/api/badges/UKHomeOffice/identity-service-api/status.svg)
+![Build Status](https://github.com/UKHomeOffice/identity-service-api/workflows/Publish%20Docker/badge.svg)
 
 # Identity Service API
 
