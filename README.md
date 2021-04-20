@@ -1,4 +1,4 @@
-![Identity Service API Test and Build](https://github.com/DigitalPatterns/identity-service-api/workflows/Identity%20Service%20API%20Test%20and%20Build/badge.svg)
+![Build Status](https://github.com/UKHomeOffice/identity-service-api/workflows/Publish%20Docker/badge.svg)
 
 # Identity Service API
 
@@ -86,7 +86,7 @@ There is an additional option within the model that allows you to submit the mrz
  "processKey" : "test",
  "variableName": "mrzScan",
  "workflowUrl" : "http://camunda.workflow.io"    
-} 
+}
 ```
 
 The workflow url is optional. If this is not present then the service will use the default configured on start up.
