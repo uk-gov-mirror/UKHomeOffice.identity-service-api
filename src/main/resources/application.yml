@@ -52,7 +52,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health, info, prometheus, metrics,loggers"
+        include: "health, info, prometheus, metrics"
 camel:
   springboot:
     use-mdc-logging: true

@@ -28,7 +28,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String ACTUATOR_HEALTH = "/actuator/health/**";
     private static final String ACTUATOR_METRICS = "/actuator/metrics/**";
     private static final String ACTUATOR_INFO = "/actuator/info/**";
-    private static final String ACTUATOR_LOGGERS = "/actuator/loggers/**";
     private static final String ACTUATOR_PROMETHEUS = "/actuator/prometheus/**";
     private static final String ACTUATOR = "/actuator";
 
@@ -36,8 +35,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private String issuer;
     @Value("${api.allowedAudiences}")
     private List<String> allowedAudiences;
-    @Value("${api.admin.roles:}")
-    private List<String> adminRoles;
 
 
     private final KeycloakJwtConverter keycloakJwtConverter;
@@ -55,13 +52,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, ACTUATOR_HEALTH).permitAll()
                 .antMatchers(HttpMethod.GET,ACTUATOR_METRICS).permitAll()
                 .antMatchers(HttpMethod.GET,ACTUATOR_INFO).permitAll()
-                .antMatchers(HttpMethod.GET, ACTUATOR_LOGGERS).permitAll()
                 .antMatchers(ACTUATOR, "GET").permitAll()
                 .antMatchers(HttpMethod.GET, ACTUATOR_PROMETHEUS).permitAll()
                 .antMatchers("/swagger/**").permitAll()
                 .antMatchers("/docs/**").permitAll()
-                .antMatchers(HttpMethod.POST,ACTUATOR_LOGGERS)
-                    .hasAnyAuthority(adminRoles.toArray(new String[]{}))
                 .anyRequest()
                 .authenticated()
                 .and()
